@@ -67,20 +67,8 @@ handle_event(info,_Event,_,State) ->
     {stop, normal, State}.
 
 
-terminate(_Reason, _StateName,  #{uid := UId,device := DeviceId , corenode := CoreNode , pushnode := PushNode} = _State) ->
-    case UId>0 of
-        true    ->
-            case rpc:call(CoreNode, ?COREAPP, del_online, [UId,DeviceId,self()]) of
-                true    ->
-                    rpc:cast(CoreNode,?COREAPP,del_online,[UId,DeviceId]),
-                    rpc:cast(PushNode, push_server, remove_online, [UId,DeviceId]);
-                false   ->
-                    ok
-            end,
-            ok;
-        false   ->
-            ok
-    end.
+terminate(_Reason, _StateName,   _State) ->
+    ok.
     
 code_change(_OldVsn, OldState, StateData, _Extra) ->
     {handle_event_function,OldState,StateData}.
